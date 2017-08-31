@@ -1,0 +1,101 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../iron-icons/maps-icons.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html">
+
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="location-picker-map.html">
+
+
+<dom-module id="location-picker">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
+
+        <paper-dialog id="modal" modal>
+
+            <location-picker-map
+                    on-pick-location="_on_pick">
+
+            </location-picker-map>
+
+            <div class="buttons">
+                <paper-button dialog-dismiss autofocus>Cancel</paper-button>
+            </div>
+        </paper-dialog>
+
+        <paper-input
+                label="Location"
+                value="[[value]]"
+                id="location">
+            <div slot="prefix">[[name]] </div>
+
+            <paper-icon-button
+                    slot="suffix"
+                    on-click="_openMap"
+                    icon="maps:map"
+                    alt="clear"
+                    title="clear">
+            </paper-icon-button>
+        </paper-input>
+
+
+    </template>
+
+    <script>
+        /**
+         * `location-picker`
+         * Pick a location from google maps
+         *
+         * @customElement
+         * @polymer
+         * @demo demo/index.html
+         */
+        class LocationPicker extends Polymer.Element {
+            static get is() {
+                return 'location-picker';
+            }
+
+            static get properties() {
+                return {
+                    value: {
+                        type: String,
+                        value: ''
+                    },
+                    name: {
+                        type: String,
+                        value: ''
+                    },
+                };
+            }
+
+            _openMap() {
+                this.$.modal.open();
+            }
+
+            _on_pick(evt) {
+                this.$.modal.close();
+
+                var ll = evt.detail.geometry.location;
+                var llA = [ll.lat(),ll.lng()];
+
+                this.value = JSON.stringify(llA);
+
+                this.name = evt.detail.name;
+
+
+
+            }
+
+        }
+
+        window.customElements.define(LocationPicker.is, LocationPicker);
+    </script>
+</dom-module>

@@ -1,0 +1,106 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<link rel="import" href="../google-map/google-map.html">
+<link rel="import" href="../google-map/google-map-search.html">
+<link rel="import" href="../google-map/google-map-marker.html">
+
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-listbox/paper-listbox.html">
+
+
+<link rel="import" href="../paper-input/paper-input.html">
+<!--<link rel="import" href="bower_components/paper-input/paper-input.html">-->
+
+<dom-module id="location-picker-map">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      google-map {
+          height: 300px;
+      }
+    </style>
+
+      <paper-input label="Search Location" value="{{query}}"></paper-input>
+
+    <google-map-search map="[[map]]" query="{{query}}" results="{{results}}">
+    </google-map-search>
+    <google-map map="{{map}}"
+                api-key="AIzaSyD3E1D9b-Z7ekrT3tbhl_dy8DCXuIuDDRc"
+                latitude="{{lat}}"
+                longitude="{{lng}}">
+
+
+
+        <google-map-marker
+                latitude="[[lat]]"
+                longitude="[[lng]]">
+
+          <h2>marker.name</h2>
+          <span>marker.formatted_address</span>
+
+        </google-map-marker>
+
+
+
+    </google-map>
+
+      <paper-listbox on-iron-select = _on_location_select>
+          <template is="dom-repeat" items="{{results}}" as="marker">
+
+          <paper-item result="[[marker]]">
+              <paper-item-body two-line>
+                  <div>{{marker.name}}</div>
+                  <div secondary>{{marker.formatted_address}}</div>
+              </paper-item-body>
+
+          </paper-item>
+          </template>
+
+
+      </paper-listbox>
+
+  </template>
+
+  <script>
+    /**
+     * `location-picker-map`
+     * Pick a location from google maps
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class LocationPickerMap extends Polymer.Element {
+      static get is() { return 'location-picker-map'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'location-picker-map'
+          },
+            map:Object,
+            lat:Object,
+            lng:Object,
+            results:Array
+        };
+      }
+      _on_location_select(evt){
+          let pickedLocation = evt.detail.item.result;
+          //console.log(pickedLocation);
+
+          this.lat = pickedLocation.geometry.location.lat();
+          this.lng = pickedLocation.geometry.location.lng();
+
+          this.dispatchEvent(new CustomEvent('pick-location',{detail:pickedLocation}));
+
+
+
+      }
+    }
+
+    window.customElements.define(LocationPickerMap.is, LocationPickerMap);
+  </script>
+</dom-module>
